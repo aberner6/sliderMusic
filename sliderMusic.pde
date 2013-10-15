@@ -1,61 +1,119 @@
-import controlP5.*;
-// for audio stuff
+/**
+ * ControlP5 controlFont. 
+ *
+ * this example shows how to create a button with controlP5 (1), how to
+ * load and use a PFont with controlP5 (2), apply a ControlFont to
+ * the caption label of a button (3), and adjust the location of a
+ * caption label using the style() property of a controller.
+ * 
+ * by andreas schlegel, 2012
+ */
+ // for audio stuff
 import ddf.minim.*;
 AudioPlayer player;
 Minim minim;
 // for audio stuff
+ 
+ 
+ 
+ 
+ 
+ 
+import controlP5.*;
 
-//PFont font;
-public Slider s1;
-public ControlP5 controlP5;
-//Textfield myTextfield;
+ControlP5 cp5;
+
+controlP5.Slider b;
+
+int buttonValue = 1;
+
+boolean isOpen;
+
+int myColorBackground = color(0,0,0);
 
 PImage bg;
-PFont font;
-//ControlP5 controlP5;
-
-int myColorBackground = color(0, 0, 0);
-
-int sliderValue = 100;
 
 void setup() {
-  size(270, 500, P2D);
-
-  bg = loadImage("smartphone2.png");
-
-  minim = new Minim(this);
-  // load a file, give the AudioPlayer buffers that are 2048 samples long
-  player = minim.loadFile("Waters of March - Águas de Março - Tom Jobim.mp3", 2048);
-
-
-  font = loadFont("Avenir-Book-14.vlw");
-  textFont(font);
-  colorMode(RGB);
-
-  controlP5 = new ControlP5(this);
-//   myTextarea.valueLabel().setFont(index);
-//   int index = Label.bitFontRenderer.addBitFont(loadImage("yourFont.gif"));
-  //name, minimum, maximum, default, xpos, ypos, width, height
-  // 45, 85, 47.5, 10, 625, 670, 40);
-//   controlP5.setControlFont(new font(createFont("Arial",8), 8));
-  controlP5.addSlider("music", 0, 100, 68, 40, 260, 140, 40);
-
+//  size(700,400);
+    size(270, 500, P2D);
+    bg = loadImage("smartphone2.png");
   smooth();
-  //  noStroke();
+  
+    minim = new Minim(this);
+  // load a file, give the AudioPlayer buffers that are 2048 samples long
+  player = minim.loadFile("machucar.mp3", 2048);
 
+  
+  
+  
+  
+  
+  
+  
+  cp5 = new ControlP5(this);
+  // (1)
+  // create some controllers
+  b = cp5.addSlider("button")
+     .setValue(10)
+     .setPosition(100,100)
+     .setSize(100,30)
+     .setId(1);
+     
+//  b = cp5.addSlider("buttonValue")
+//         .setValue(4)
+//         .setPosition(100,190)
+//         .setSize(200,200)
+//         .setId(2);
+  
+  // (2)
+  // load a new font. ControlFont is a wrapper for processing's PFont
+  // with processing 1.1 ControlFont.setSmooth() is not supported anymore.
+  // to display a font as smooth or non-smooth, use true/false as 3rd parameter
+  // when creating a PFont:
+  
+  PFont pfont = createFont("Arial",20,true); // use true/false for smooth/no-smooth
+  ControlFont font = new ControlFont(pfont,241);
+ 
+  
 
-  background(bg);
-  //  controlP5.addSlider("sliderValue",100,200,100,100,200,100,10);
+  // (3)
+  // change the font and content of the captionlabels 
+  // for both buttons create earlier.
+  cp5.getController("button")
+     .getCaptionLabel()
+     .setFont(font)
+     .toUpperCase(false)
+     .setSize(24)
+     .setText("music")
+     ;
+     
+//  b.captionLabel()
+//   .setFont(font)
+//   .setSize(50)
+//   .toUpperCase(false)
+//   .setText("music")
+//   ;
+//  
+  // (4)
+  // adjust the location of a catiption label using the 
+  // style property of a controller.
+  b.captionLabel().getStyle().marginLeft = -180;
+  b.captionLabel().getStyle().marginTop = 4;
+
 }
 
 void draw() {
-//  background(bg);
+  cp5.draw();
+   background(bg);
 
-  //  background(myColorBackground);
-  controlP5.draw();
-  //  fill(sliderValue);
-  //  rect(0,0,width,100);
-
+  // animate button b
+//  b.position().x += ((isOpen==true ? 0:-200) - b.position().x) * 0.2;
+  
+  
+  
+  
+  
+  
   stroke(255);
   // draw the waveforms
   // the values returned by left.get() and right.get() will be between -1 and 1,
@@ -68,29 +126,31 @@ void draw() {
   }
 }
 
-void music(float theColor) {
-  myColorBackground = color(theColor);
-  println("a slider event. setting background to "+theColor);
-  if (theColor>10 && theColor<20) {
-    println ("go play chill tunes");
-    playChillTunes(theColor);
-  }
-  if (theColor>120) {
-    println (theColor+"stopping");
-    player.close();
-    minim.stop();
-    super.stop();
-  }
+public void controlEvent(ControlEvent theEvent) {
+  println(theEvent.controller().id());
 }
 
-void playChillTunes(float theColor) {
-  player.play(); 
-  println (theColor+"intunes");
-  if (theColor>120) {
-    player.close();
-    minim.stop();
-    super.stop();
+public void button(float theValue) {
+  println("a button event. "+theValue);
+//  isOpen = !isOpen;
+//  cp5.controller("button").setCaptionLabel((isOpen==true) ? "close":"open");
+
+  if (theValue>10 && theValue<20) {
+    println ("go play chill tunes");
+    playChillTunes(theValue);
   }
+
+
+}
+
+void playChillTunes(float theValue) {
+  player.play(); 
+  println (theValue+"intunes");
+//  if (theValue>120) {
+//    player.close();
+//    minim.stop();
+//    super.stop();
+//  }
 }
 
 void stop()
@@ -101,4 +161,7 @@ void stop()
 
   super.stop();
 }
+
+
+
 
